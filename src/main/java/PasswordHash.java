@@ -6,8 +6,8 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
 public class PasswordHash {
-
-    private static final String generatedSecuredPasswordHash = "1000:05234b13eb058dca65f297ec19a43e91:badfc9b4462f42f37cec35df9955b37dc07da2001336a75873223407754f101e72424f5a9e4152a5848e7006f4e1db179dd6f12cf4c4dc539431dfedef0ead13";
+    //cyberpunk228
+    private static final String generatedSecuredPasswordHash = "1000:90df31fcfc5360694e1824fbcfad4aa7:f1b94456ca08c9b159b57513a66993ce9d709a466c00186273f1436139bf91b465d194d952ea43cad8a24bb0ccb7736f006b55c066e7927ba9eae70a93d4c91c";
 
     public String generateStorngPasswordHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException
     {
@@ -18,28 +18,26 @@ public class PasswordHash {
         PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
         SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
         byte[] hash = skf.generateSecret(spec).getEncoded();
+
         return iterations + ":" + toHex(salt) + ":" + toHex(hash);
     }
 
     private static byte[] getSalt() throws NoSuchAlgorithmException
     {
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
         byte[] salt = new byte[16];
+
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
         sr.nextBytes(salt);
+
         return salt;
     }
 
-    private static String toHex(byte[] array) throws NoSuchAlgorithmException
+    private static String toHex(byte[] array)
     {
         BigInteger bi = new BigInteger(1, array);
         String hex = bi.toString(16);
         int paddingLength = (array.length * 2) - hex.length();
-        if(paddingLength > 0)
-        {
-            return String.format("%0"  +paddingLength + "d", 0) + hex;
-        }else{
-            return hex;
-        }
+        return paddingLength > 0 ? String.format("%0" + paddingLength + "d", 0) + hex : hex;
     }
 
     public  boolean validatePassword(String originalPassword) throws NoSuchAlgorithmException, InvalidKeySpecException
@@ -55,18 +53,17 @@ public class PasswordHash {
 
         int diff = hash.length ^ testHash.length;
         for(int i = 0; i < hash.length && i < testHash.length; i++)
-        {
             diff |= hash[i] ^ testHash[i];
-        }
+
         return diff == 0;
     }
-    private static byte[] fromHex(String hex) throws NoSuchAlgorithmException
+
+    private static byte[] fromHex(String hex)
     {
         byte[] bytes = new byte[hex.length() / 2];
         for(int i = 0; i<bytes.length ;i++)
-        {
             bytes[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
-        }
+
         return bytes;
     }
 
